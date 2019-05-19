@@ -10,8 +10,7 @@ void printUsageScreen()
 		"--turn-on: Turn on monitors" << endl;
 }
 
-const int TURN_ON_COMMAND = -1;
-const int TURN_OFF_COMMAND = 2;
+const LPARAM POWER_OFF = 2;
 
 int main(int argc, char* argv[])
 {
@@ -25,12 +24,18 @@ int main(int argc, char* argv[])
 	if (string("--turn-off") == argv[1])
 	{
 		cout << "Turning off computer screens" << endl;
-		SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, TURN_OFF_COMMAND);
+		SendMessageTimeout(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, POWER_OFF, SMTO_ABORTIFHUNG, 100, NULL);
 	}
 	else if (string("--turn-on") == argv[1])
 	{
 		cout << "Turning on computer screens" << endl;
-		SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, TURN_ON_COMMAND);
+
+		INPUT in[1];
+		KEYBDINPUT kb;
+		kb.wVk = VK_CONTROL;
+		in[0].type = INPUT_KEYBOARD;
+		in[0].ki = kb;
+		SendInput(1, in, sizeof(in));
 	}
 	else
 	{
